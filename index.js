@@ -1,6 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require('cors');
+const dotenv = require('dotenv').config();
+const Person = require('./models/person')
 const app = express();
 
 app.use(express.json());
@@ -55,14 +57,17 @@ app.get("/api/persons", (request, response) => {
 
 app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
+  Person.findById(id).then(person => {
+    response.json(person)
+  })
+  /*const person = persons.find((person) => person.id === id);
   if (person) {
     response.json(person);
   } else {
     response.status(404).json({
       error: "person doesn't exist",
-    });
-}});
+    });*/
+});
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
@@ -99,7 +104,14 @@ app.post("/api/persons", (request, response) => {
 
   persons = persons.concat(person);
 
-  response.json(person);
+  const personDb = new Person({
+    name: body.name,
+    number: body.number
+  })
+
+  personDb.save().then(savedPersonDb => {
+    response.json(savedPersonDb)
+  })
 });
 
 const unknownEndpoint = (request, response) => {
@@ -107,7 +119,7 @@ const unknownEndpoint = (request, response) => {
 };
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
