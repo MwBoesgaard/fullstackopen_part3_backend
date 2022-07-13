@@ -45,10 +45,12 @@ app.get("/", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  response.send(
-    `<p>Phonebook has info for ${persons.length} people</p>
-         <p>${Date()}</p>`
-  );
+  Person.find({}).then((persons) => {
+    response.send(
+      `<p>Phonebook has info for ${persons.length} people</p>
+           <p>${Date()}</p>`
+    );
+  }).catch(error => next(error));
 });
 
 app.get("/api/persons", (request, response, next) => {

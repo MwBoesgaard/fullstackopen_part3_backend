@@ -3,3 +3,7 @@ GET http://localhost:3001/api/persons/62cf10135962c83949b57327
 ###
 
 GET http://localhost:3001/api/persons
+
+###
+
+GET https://glacial-mesa-24020.herokuapp.com/api/persons
