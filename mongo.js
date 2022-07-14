@@ -1,70 +1,72 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 if (process.argv.length < 3) {
-  console.log('Please provide the password as an argument: node mongo.js <password>')
-  process.exit(1)
+  console.log(
+    "Please provide the password as an argument: node mongo.js <password>"
+  );
+  process.exit(1);
 }
 
-const password = process.argv[2]
+const password = process.argv[2];
 
-const nameToAdd = process.argv[3]
-const numberToAdd = process.argv[4]
+const nameToAdd = process.argv[3];
+const numberToAdd = process.argv[4];
 
-const url = `mongodb+srv://mwboesgaard:${password}@cluster0.cyeqw.mongodb.net/?retryWrites=true&w=majority`
+const url = `mongodb+srv://mwboesgaard:${password}@cluster0.cyeqw.mongodb.net/?retryWrites=true&w=majority`;
 
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
     minLength: 3,
-    required: true
-},
+    required: true,
+  },
   number: {
     type: String,
     minLength: 8,
     required: true,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return /\d{3}-\d{3}-\d{4}/.test(v);
       },
-      message: props => `${props.value} is not a valid phone number!`
-  }
-}})
+      message: (props) => `${props.value} is not a valid phone number!`,
+    },
+  },
+});
 
-const Person = mongoose.model('Person', personSchema)
+const Person = mongoose.model("Person", personSchema);
 
 if (process.argv.length === 3) {
-    console.log("lol")
-    mongoose
+  console.log("lol");
+  mongoose
     .connect(url)
     .then((result) => {
-        console.log('connected')
-      }).then(
-        Person.find({}).then(result => {
-            result.forEach(person => {
-                console.log("some message")
-                console.log(person)
-            }
-        )
-        mongoose.connection.close()
-      }))
+      console.log("connected");
+    })
+    .then(
+      Person.find({}).then((result) => {
+        result.forEach((person) => {
+          console.log("some message");
+          console.log(person);
+        });
+        mongoose.connection.close();
+      })
+    );
 } else {
-    mongoose
+  mongoose
     .connect(url)
     .then((result) => {
-      console.log('connected')
+      console.log("connected");
 
       const person = new Person({
         name: nameToAdd,
-        number: numberToAdd
-      })
-  
-      return person.save()
+        number: numberToAdd,
+      });
+
+      return person.save();
     })
     .then(() => {
-      console.log(`added ${nameToAdd} number ${numberToAdd} to phonebook`)
-      return mongoose.connection.close()
+      console.log(`added ${nameToAdd} number ${numberToAdd} to phonebook`);
+      return mongoose.connection.close();
     })
-    .catch((err) => console.log(err))
+    .catch((err) => console.log(err));
 }
-
-
